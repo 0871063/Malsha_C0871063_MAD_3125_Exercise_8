@@ -10,60 +10,63 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.exercise_8.databinding.ActivityMainBinding;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button startBtn;
-    private Button lapBtn;
-    private TextView timerTV;
-    private ListView timerListView;
-    private ArrayList<Timer> timerList = new ArrayList<>();
+    private ActivityMainBinding binding;
     private  boolean timerStarted ;
-    private Handler handler = new Handler();
+    private Handler handler ;
     private Runnable runnable;
     private int delay = 1000;
     private int lapCount = 0;
     private int seconds = 0;
+    private TimerAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        startBtn = findViewById(R.id.startBtn);
-        lapBtn = findViewById(R.id.lapBtn);
-        timerTV = findViewById(R.id.timerTV);
-        timerListView = findViewById(R.id.timerListView);
-        lapBtn.setVisibility(View.GONE);
-        ArrayAdapter<Timer> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,timerList);
-        timerListView.setAdapter(adapter);
-        startBtn.setOnClickListener(new View.OnClickListener() {
+        binding.lapBtn.setVisibility(View.GONE);
+        adapter = new TimerAdapter(this, android.R.layout.simple_list_item_1);
+        binding.timerListView.setAdapter(adapter);
+        binding.startBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (timerStarted){
-                    startBtn.setText(getString(R.string.start));
+                    binding.startBtn.setText(getString(R.string.start));
                     handler.removeCallbacks(runnable);
-                    lapBtn.setVisibility(View.GONE);
-                    timerTV.setText(getString(R.string.timer));
                     timerStarted = false;
-                    seconds = 0;
-                    handler.removeCallbacks(runnable);
+                    binding.lapBtn.setText(getString(R.string.reset));
                 }else {
-                    startBtn.setText(getString(R.string.stop));
+                    binding.startBtn.setText(getString(R.string.stop));
                     timerStarted = true;
-                    lapBtn.setVisibility(View.VISIBLE);
+                    binding.lapBtn.setVisibility(View.VISIBLE);
                     startTimer();
+
                 }
             }
         });
-        lapBtn.setOnClickListener(new View.OnClickListener() {
+        binding.lapBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                lapCount += 1;
-                String time = timerTV.getText().toString();
-                String lap = "Lap " + String.valueOf(lapCount);
-                Timer timer = new Timer(lap ,time);
-                timerList.add(timer);
-                adapter.notifyDataSetChanged();
+                if (timerStarted) {
+                    lapCount += 1;
+                    String time = binding.timerTV.getText().toString();
+                    String lap = "Lap " + String.valueOf(lapCount);
+                    Timer timer = new Timer(lap, time);
+                    Timer.timerList.add(timer);
+                    adapter.notifyDataSetChanged();
+                }else{
+                    binding.lapBtn.setText(getString(R.string.lap));
+                    binding.timerTV.setText(getString(R.string.timer));
+                    Timer.timerList.removeAll(Timer.timerList);
+                    adapter.notifyDataSetChanged();
+                    seconds = 0;
+                }
             }
         });
     }
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                                 minutes, secs);
 
                 // Set the text view text.
-                timerTV.setText(time);
+                binding.timerTV.setText(time);
 
                 // If running is true, increment the
                 // seconds variable.
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Post the code again
                 // with a delay of 1 second.
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, delay);
             }
         });
     }

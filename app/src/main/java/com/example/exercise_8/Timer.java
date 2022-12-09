@@ -1,5 +1,7 @@
 package com.example.exercise_8;
 
+import java.util.ArrayList;
+
 public class Timer {
     private String lapCount;
     private String time;
@@ -24,4 +26,6 @@ public class Timer {
         this.lapCount = lapCount;
         this.time = time;
     }
+
+    public static ArrayList<Timer> timerList = new ArrayList<>();
 }
