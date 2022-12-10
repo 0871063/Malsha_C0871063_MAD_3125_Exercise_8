@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (timerStarted){
                     binding.startBtn.setText(getString(R.string.start));
-                    handler.removeCallbacks(runnable);
+                   handler.removeCallbacks(runnable);
                     timerStarted = false;
                     binding.lapBtn.setText(getString(R.string.reset));
                 }else {
@@ -72,38 +72,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
-        handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
+       handler = new Handler();
+       runnable = new Runnable() {
+           @Override
 
-            public void run()
-            {
-                int hours = seconds / 3600;
-                int minutes = (seconds % 3600) / 60;
-                int secs = seconds % 60;
+           public void run()
+           {
+               int hours = seconds / 3600;
+               int minutes = (seconds % 3600) / 60;
+               int secs = seconds % 60;
 
-                // Format the seconds into hours, minutes,
-                // and seconds.
-                String time
-                        = String
-                        .format(Locale.getDefault(),
-                                "%02d:%02d:%02d", hours,
-                                minutes, secs);
+               // Format the seconds into hours, minutes,
+               // and seconds.
+               String time
+                       = String
+                       .format(Locale.getDefault(),
+                               "%02d:%02d:%02d", hours,
+                               minutes, secs);
 
-                // Set the text view text.
-                binding.timerTV.setText(time);
+               // Set the text view text.
+               binding.timerTV.setText(time);
 
-                // If running is true, increment the
-                // seconds variable.
-                if (timerStarted) {
-                    seconds++;
-                }
+               // If running is true, increment the
+               // seconds variable.
+               if (timerStarted) {
+                   seconds++;
+               }
 
-                // Post the code again
-                // with a delay of 1 second.
-                handler.postDelayed(this, delay);
-            }
-        });
+               // Post the code again
+               // with a delay of 1 second.
+               handler.postDelayed(this, delay);
+           }
+       };
+        handler.post(runnable);
     }
 
 }
